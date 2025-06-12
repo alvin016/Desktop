@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}體重紀錄{% endblock %}
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<h2>📊 體重紀錄</h2>
+<a href="{% url 'add_weight' %}" class="btn btn-success mb-4">➕ 新增紀錄</a>
+<canvas id="weightChart" height="100"></canvas>
+<table class="table table-striped mt-4">
+  <thead>
+    <tr><th>日期</th><th>體重</th><th>體脂</th><th>內臟</th><th>肌肉</th><th>BMI</th><th>BMR</th><th>年齡</th></tr>
+  </thead>
+  <tbody>
+    {% for record in records %}
+      <tr>
+        <td>{{ record.date }}</td><td>{{ record.weight }}</td><td>{{ record.body_fat }}</td>
+        <td>{{ record.visceral_fat }}</td><td>{{ record.muscle_rate }}</td><td>{{ record.bmi }}</td>
+        <td>{{ record.bmr }}</td><td>{{ record.body_age }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+{% block script_extra %}
+<script>
+const ctx = document.getElementById('weightChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: {{ labels|safe }},
+    datasets: [
+      { label: '體重', data: {{ weights|safe }}, borderColor: 'blue', tension: 0.3 },
+      { label: '體脂率', data: {{ body_fats|safe }}, borderColor: 'red', tension: 0.3 },
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: false } } }
+});
+</script>
+{% endblock %}

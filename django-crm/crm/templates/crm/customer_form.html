@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ title }}</h2>
+<form method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+    <button type="submit" class="btn btn-success">💾 儲存</button>
+    <a href="{% url 'customer_list' %}" class="btn btn-secondary">↩ 返回</a>
+  </div>
+</form>
+{% endblock %}

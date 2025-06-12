@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}新增體重記錄{% endblock %}
+{% block content %}
+<div class="bg-white p-4 shadow rounded">
+  <h2 class="mb-4">📥 新增體重記錄</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <label class="form-label">日期</label>
+        {% if form.date %}{{ form.date }}{% endif %}
+        {% if form.date.errors %}
+          <div class="text-danger small">{{ form.date.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">體重（kg）</label>
+        {% if form.weight %}{{ form.weight }}{% endif %}
+        {% if form.weight.errors %}
+          <div class="text-danger small">{{ form.weight.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">體脂率（%）</label>
+        {% if form.body_fat %}{{ form.body_fat }}{% endif %}
+        {% if form.body_fat.errors %}
+          <div class="text-danger small">{{ form.body_fat.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">內臟脂肪率</label>
+        {% if form.visceral_fat %}{{ form.visceral_fat }}{% endif %}
+        {% if form.visceral_fat.errors %}
+          <div class="text-danger small">{{ form.visceral_fat.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">骨骼肌率（%）</label>
+        {% if form.muscle_rate %}{{ form.muscle_rate }}{% endif %}
+        {% if form.muscle_rate.errors %}
+          <div class="text-danger small">{{ form.muscle_rate.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">BMI</label>
+        {% if form.bmi %}{{ form.bmi }}{% endif %}
+        {% if form.bmi.errors %}
+          <div class="text-danger small">{{ form.bmi.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">基礎代謝率（kcal）</label>
+        {% if form.bmr %}{{ form.bmr }}{% endif %}
+        {% if form.bmr.errors %}
+          <div class="text-danger small">{{ form.bmr.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">身體年齡</label>
+        {% if form.body_age %}{{ form.body_age }}{% endif %}
+        {% if form.body_age.errors %}
+          <div class="text-danger small">{{ form.body_age.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+    </div>
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">💾 儲存</button>
+      <a href="{% url 'weight_list' %}" class="btn btn-secondary">回列表</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

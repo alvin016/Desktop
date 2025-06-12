@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}客戶詳情{% endblock %}
+{% block content %}
+<h2 class="mb-4">👤 客戶詳情</h2>
+<div class="card shadow-sm p-4">
+  <div class="row">
+    <div class="col-md-3 text-center mb-3">
+      {% if customer.photo %}
+      <img src="{{ customer.photo.url }}" class="img-thumbnail img-fluid" style="max-height: 200px; cursor: pointer;"
+          data-bs-toggle="modal" data-bs-target="#photoModal">
+    {% else %}
+    <div class="text-muted">無照片</div>
+    {% endif %}
+    </div>
+    <div class="col-md-9">
+      <h4>{{ customer.name }}</h4>
+      <p><strong>Email：</strong> {{ customer.email }}</p>
+      <p><strong>電話：</strong> {{ customer.phone }}</p>
+      <p><strong>生日：</strong> {{ customer.birthday_md }}</p>
+      <p><strong>星座：</strong> {{ customer.get_constellation_display }}</p>
+      <p><strong>性別：</strong>
+        {% if customer.gender == 'M' %}男{% elif customer.gender == 'F' %}女{% else %}其他{% endif %}
+      </p>
+      <p><strong>地址：</strong> {{ customer.city }} {{ customer.district }}</p>
+      <p><strong>備註：</strong><br>{{ customer.note|linebreaks }}</p>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col d-grid gap-2 d-md-flex justify-content-md-end">
+      <a href="{% url 'customer_edit' customer.id %}" class="btn btn-warning">✏️ 編輯</a>
+      <a href="{% url 'customer_list' %}" class="btn btn-secondary">↩ 返回</a>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="photoModalLabel">查看照片</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="{{ customer.photo.url }}" alt="photo" class="img-fluid rounded">
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<h4>📘 活動紀錄</h4>
+<a href="{% url 'add_activity' customer.id %}" class="btn btn-outline-primary btn-sm mb-2">➕ 新增紀錄</a>
+
+{% for act in customer.activities.all %}
+  <div class="card mb-2">
+    <div class="card-body">
+      <p><strong>{{ act.get_type_display }} ｜ {{ act.date }}</strong></p>
+      <p>{{ act.content|linebreaks }}</p>
+
+    {% if request.user == act.created_by or request.user.is_superuser %}
+  <a href="{% url 'edit_activity' act.id %}" class="btn btn-sm btn-outline-secondary">✏️ 編輯</a>
+  <a href="{% url 'delete_activity' act.id %}" class="btn btn-sm btn-danger"
+     onclick="return confirm('確定要刪除這筆紀錄嗎？')">🗑️ 刪除</a>
+{% endif %}
+    </div>
+  </div>
+{% endfor %}
+<h5>🧼 家用清潔購買狀況</h5>
+<table class="table table-bordered w-auto">
+  <tr>
+    <th>產品</th><th>狀態</th>
+  </tr>
+  <tr>
+    <td>濃縮洗碗精</td>
+    <td>{{ customer.get_detergent_status_display }}</td>
+  </tr>
+  <tr>
+    <td>L.O.C.</td>
+    <td>{{ customer.get_loc_status_display }}</td>
+  </tr>
+  <tr>
+    <td>SA8</td>
+    <td>{{ customer.get_sa8_status_display }}</td>
+  </tr>
+</table>
+
+
+{% endblock %}

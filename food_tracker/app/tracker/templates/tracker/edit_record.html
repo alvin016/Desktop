@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}編輯飲食紀錄{% endblock %}
+{% block content %}
+<h2>✏️ 編輯飲食紀錄</h2>
+<form method="post" enctype="multipart/form-data" class="bg-white p-4 shadow rounded">
+  {% csrf_token %}
+  {{ record_form.as_p }}
+
+  <h4>已上傳圖片（{{ record.images.count }} / 3）</h4>
+  <div id="image-container" class="row g-3 mb-3">
+    {% for img in record.images.all %}
+      <div class="col-md-4 image-item" data-id="{{ img.id }}">
+        <div class="card shadow-sm h-100 text-center">
+          <img src="{{ img.image.url }}" class="card-img-top img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+          <div class="card-body p-2">
+            <form method="post" action="{% url 'delete_image' img.id %}" id="delete-form-{{ img.id }}">
+              {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm w-100" form="delete-form-{{ img.id }}" onclick="return confirm('確定要刪除這張圖片嗎？')">刪除</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+     {% if remain > 0 %}
+    <div class="mb-3">
+      <label class="form-label">上傳新圖片（最多補 {{ remain }} 張）</label>
+      <input type="file" name="images" class="form-control" multiple>
+    </div>
+  {% else %}
+    <div class="alert alert-info">已達 3 張圖片上限，如要補傳請先刪除現有圖片。</div>
+  {% endif %}
+
+  <div class="mt-3">
+    <button type="submit" class="btn btn-primary">儲存修改</button>
+    <a href="{% url 'food_record_list' %}" class="btn btn-secondary">取消</a>
+  </div>
+  </div>
+
+ 
+</form>
+{% endblock %}

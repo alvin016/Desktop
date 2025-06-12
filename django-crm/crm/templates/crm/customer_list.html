@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}客戶列表{% endblock %}
+{% block content %}
+<h2 class="mb-4">📋 客戶列表</h2>
+<form method="get" class="row g-2 mb-4 align-items-end">
+  <div class="col-md-4">
+    <label>🔍 關鍵字</label>
+    <input type="text" name="q" class="form-control" placeholder="姓名、電話、Email" value="{{ keyword }}">
+  </div>
+
+  <div class="col-md-3">
+    <label>📍 縣市</label>
+    <select name="city" class="form-select">
+      <option value="">全部</option>
+      {% for c in city_list %}
+        <option value="{{ c }}" {% if c == city %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label>🌟 星座</label>
+    <select name="constellation" class="form-select">
+      <option value="">全部</option>
+      {% for code, name in constellation_list %}
+        <option value="{{ code }}" {% if code == constellation %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2 d-grid gap-2">
+    <button type="submit" class="btn btn-primary">篩選</button>
+    <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary">重設</a>
+  </div>
+</form>
+{% if customers.has_other_pages %}
+<nav aria-label="客戶分頁" class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if customers.has_previous %}
+      <li class="page-item">
+        <a class="page-link"
+   href="?q={{ keyword }}&city={{ city }}&constellation={{ constellation }}&page={{ num }}">
+  {{ num }}
+</a>
+        
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">上一頁</span></li>
+    {% endif %}
+
+    {% for num in customers.paginator.page_range %}
+      {% if customers.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% elif num >= customers.number|add:"-2" and num <= customers.number|add:"2" %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ keyword }}&page={{ num }}">{{ num }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if customers.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ keyword }}&page={{ customers.next_page_number }}">下一頁</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">下一頁</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+
+<a href="{% url 'customer_create' %}" class="btn btn-primary mb-3">➕ 新增客戶</a>
+
+<div class="table-responsive">
+  <table class="table table-hover table-bordered bg-white">
+    <thead class="table-dark">
+      <tr>
+        <th>照片</th><th>姓名</th><th>Email</th><th>電話</th>
+        <th>生日</th><th>星座</th><th>性別</th><th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr>
+        <td>
+          {% if c.photo %}
+            <img src="{{ c.photo.url }}" class="img-thumbnail" style="height: 50px;">
+          {% else %}-{% endif %}
+        </td>
+        <td><a href="{% url 'customer_detail' c.id %}">{{ c.name }}</a></td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.phone }}</td>
+        <td>{{ c.birthday_md }}</td>
+        <td>{{ c.get_constellation_display }}</td>
+        <td>
+          {% if c.gender == 'M' %}男{% elif c.gender == 'F' %}女{% else %}其他{% endif %}
+        </td>
+        <td>
+          {% if perms.crm.change_customer %}
+  <a href="{% url 'customer_edit' c.id %}" class="btn btn-sm btn-warning">✏️</a>
+{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

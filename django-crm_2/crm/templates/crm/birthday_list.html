@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}本月壽星{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">🎂 {{ month|add:"月" }}壽星</h2>
+
+{% if customers %}
+<div class="table-responsive">
+  <table class="table table-hover table-bordered bg-white align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>照片</th>
+        <th>姓名</th>
+        <th>生日</th>
+        <th>星座</th>
+        <th>Email</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr>
+        <td class="text-center">
+          {% if c.photo %}
+            <img src="{{ c.photo.url }}" class="img-thumbnail" style="height: 50px;">
+          {% else %}
+            <span class="text-muted">無</span>
+          {% endif %}
+        </td>
+        <td><a href="{% url 'customer_detail' c.id %}">{{ c.name }}</a></td>
+        <td>{{ c.birthday_md }}</td>
+        <td>{{ c.get_constellation_display }}</td>
+        <td>{{ c.email }}</td>
+        <td>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a href="{% url 'customer_edit' c.id %}" class="btn btn-outline-primary btn-sm">✏️ 編輯</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info">本月暫無壽星 🎉</div>
+{% endif %}
+
+<div class="d-grid d-md-flex justify-content-md-end mt-4">
+  <a href="{% url 'customer_list' %}" class="btn btn-secondary">↩ 返回客戶列表</a>
+</div>
+{% endblock %}

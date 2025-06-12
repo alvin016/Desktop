@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}飲食紀錄列表{% endblock %}
+{% block content %}
+<h2>📋 飲食紀錄列表</h2>
+<a href="{% url 'create_food_record' %}" class="btn btn-primary mb-4">新增紀錄</a>
+<!-- 篩選表單 -->
+<form method="get" class="row gy-3 gx-2 mb-4">
+  <div class="col-12 col-md-3">
+    <label class="form-label">分類</label>
+    <select name="category" class="form-select">
+      <option value="">全部</option>
+      <option value="breakfast" {% if selected_category == 'breakfast' %}selected{% endif %}>早餐</option>
+      <option value="lunch" {% if selected_category == 'lunch' %}selected{% endif %}>中餐</option>
+      <option value="dinner" {% if selected_category == 'dinner' %}selected{% endif %}>晚餐</option>
+      <option value="snack" {% if selected_category == 'snack' %}selected{% endif %}>加餐</option>
+    </select>
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label">起始日期</label>
+    <input type="date" name="start" class="form-control" value="{{ start_date }}">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label">結束日期</label>
+    <input type="date" name="end" class="form-control" value="{{ end_date }}">
+  </div>
+  <div class="col-12 col-md-3 d-flex gap-2 align-items-end">
+    <button type="submit" class="btn btn-primary w-100">篩選</button>
+    <a href="{% url 'food_record_list' %}" class="btn btn-outline-secondary w-100">重置</a>
+  </div>
+</form>
+
+<!-- 卡片顯示區 -->
+{% for record in page_obj %}
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">{{ record.date }} - {{ record.get_category_display }}</h5>
+      <p class="card-text">{{ record.note|linebreaks }}</p>
+
+      {% if record.images.all %}
+      <div class="row g-2">
+        {% for image in record.images.all %}
+          <img src="{{ image.image.url }}" class="img-thumbnail" style="max-width: 200px;" onclick="showImageModal('{{ image.image.url }}')">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="card-footer text-end">
+      <a href="{% url 'edit_food_record' record.pk %}" class="btn btn-sm btn-warning">✏️ 編輯</a>
+      <a href="{% url 'delete_food_record' record.pk %}" class="btn btn-sm btn-danger">🗑️ 刪除</a>
+    </div>
+  </div>
+{% empty %}
+  <p>目前尚無紀錄。</p>
+{% endfor %}
+
+<!-- 分頁 -->
+{% with query_string="" %}
+  {% if selected_category %}
+    {% with query_string=query_string|add:"&category="|add:selected_category %}{% endwith %}
+  {% endif %}
+  {% if start_date %}
+    {% with query_string=query_string|add:"&start="|add:start_date %}{% endwith %}
+  {% endif %}
+  {% if end_date %}
+    {% with query_string=query_string|add:"&end="|add:end_date %}{% endwith %}
+  {% endif %}
+
+  <nav aria-label="分頁導覽" class="mt-4 mb-5">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{{ query_string }}">上一頁</a>
+        </li>
+      {% endif %}
+      <li class="page-item disabled">
+        <span class="page-link">第 {{ page_obj.number }} 頁 / 共 {{ page_obj.paginator.num_pages }} 頁</span>
+      </li>
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{{ query_string }}">下一頁</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endwith %}
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <img src="" id="modalImage" class="img-fluid rounded" alt="預覽圖片">
+    </div>
+  </div>
+</div>
+{% endblock %}

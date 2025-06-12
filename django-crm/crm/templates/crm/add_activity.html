@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}新增活動紀錄{% endblock %}
+{% block content %}
+<h3>📝 新增活動紀錄 - {{ customer.name }}</h3>
+<form method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button type="submit" class="btn btn-primary">💾 儲存紀錄</button>
+  <a href="{% url 'customer_detail' customer.id %}" class="btn btn-secondary">↩ 返回</a>
+</form>
+{% endblock %}

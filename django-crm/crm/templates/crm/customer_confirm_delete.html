@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}確認刪除{% endblock %}
+
+{% block content %}
+<h2>⚠️ 確認刪除</h2>
+<div class="alert alert-danger">
+  你確定要刪除「{{ customer.name }}」的資料嗎？
+</div>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">刪除</button>
+  <a href="{% url 'customer_list' %}" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}
